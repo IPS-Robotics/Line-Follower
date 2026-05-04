@@ -41,8 +41,12 @@
 
 # Build directories
 build/
+build*
 Build/
 build-*/
+build-*
+build_*
+
 
 # CMake generated files
 CMakeFiles/
@@ -67,3 +71,13 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+#stupid macos files
+.DS_Store
+
+#vscode
+.vscode
+
+#random stuff
+.idea
+*.pdf
