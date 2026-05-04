@@ -61,8 +61,12 @@ target_include_directories(LineFollower PRIVATE
 # Add any user requested libraries
 target_link_libraries(LineFollower 
         hardware_i2c
-        
         )
+
+# Add custom modules
+add_subdirectory(drive)
+
+target_link_libraries(LineFollower drive)
 
 pico_add_extra_outputs(LineFollower)
 
