@@ -2,6 +2,9 @@
 #include "pico/cyw43_arch.h"
 #include "drive.h"
 
+#define MOTOR_KV (8000/7.2f) // RPM per Volt
+#define MOTOR_VOLTAGE 7.2f   // Volts
+
 int main() {
     // Setup
     stdio_init_all();
@@ -12,11 +15,10 @@ int main() {
         return -1;
     }
 
-    // Initialize Drive Module - maximum possible PWM resolution
-    drive_init(0xFFFF);
+    // Initialize Drive Module (16-bit PWM)
+    drive_init(calculate_max_rpm(MOTOR_VOLTAGE, MOTOR_KV), 65535);
 
-    // Set both motors forward - useful for testing later (illegal use of internal function but its testing so its ok)
-    drive_sync_motor_pwm_and_dir(FORWARD, 0.5f); // 50% speed
+    drive_follow_arc(0.2f, 0.25f); // Follow an arc with 0.2 m/s speed and 0.25 m radius
 
     // Loop
     while (1) {
