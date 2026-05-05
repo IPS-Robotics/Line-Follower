@@ -1,5 +1,5 @@
-#ifndef DRIVE
-    #define DRIVE
+#ifndef DRIVE_H
+    #define DRIVE_H
 
 #include <stdint.h>
 

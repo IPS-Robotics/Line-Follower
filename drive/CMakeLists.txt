@@ -2,6 +2,8 @@
 add_library( drive
     drive.h
     drive.c
+    kinematics.h
+    kinematics.c
 )
 
 # Define what dependencies this module has from the core SDK

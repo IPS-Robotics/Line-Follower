@@ -2,8 +2,6 @@
 #include "pico/cyw43_arch.h"
 #include "drive.h"
 
-#define LED_PIN 15
-
 int main() {
     // Setup
     stdio_init_all();
