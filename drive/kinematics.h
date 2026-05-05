@@ -12,7 +12,6 @@ typedef struct {
     float right;
 } kin_output_t;
 
-
 // ===== API =====
 
 void kin_init(float max_rpm, float wheel_diameter, float wheel_dist);

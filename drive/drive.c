@@ -4,43 +4,42 @@
 #include "hardware/pwm.h"
 #include "hardware/gpio.h"
 
-uint pwm_left_slice;
-uint pwm_right_slice;
-uint16_t pwm_resolution; // The max number the PWM counter will count to before resetting to zero.
+motor_pins_t motor_left;
+motor_pins_t motor_right;
+uint16_t pwm_res; // The max number the PWM counter will count to before resetting to zero.
 
-int drive_init(float max_rpm, uint16_t pwm_resolution)
+void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
 {
+    pwm_res = pwm_resolution;
     kin_init(max_rpm, WHEEL_DIAMETER, WHEEL_DISTANCE);
 
-    // Direction pins
-    gpio_init(M_LEFT_DIR);
-    gpio_init(M_RIGHT_DIR);
-
-    gpio_set_dir(M_LEFT_DIR, GPIO_OUT);
-    gpio_set_dir(M_RIGHT_DIR, GPIO_OUT);
-
-    gpio_put(M_LEFT_DIR, 0);
-    gpio_put(M_RIGHT_DIR, 0);
-
     // PWM pins
-    gpio_set_function(M_LEFT_PWM, GPIO_FUNC_PWM);
-    gpio_set_function(M_RIGHT_PWM, GPIO_FUNC_PWM);
+    gpio_set_function(M_LEFT_PWM_FWD, GPIO_FUNC_PWM);
+    gpio_set_function(M_RIGHT_PWM_FWD, GPIO_FUNC_PWM);
+    gpio_set_function(M_LEFT_PWM_BWD, GPIO_FUNC_PWM);
+    gpio_set_function(M_RIGHT_PWM_BWD, GPIO_FUNC_PWM);
 
-    pwm_resolution = pwm_resolution;
-    pwm_left_slice = pwm_gpio_to_slice_num(M_LEFT_PWM);
-    pwm_right_slice = pwm_gpio_to_slice_num(M_RIGHT_PWM);
+    motor_left.motor = LEFT;
+    init_motor(&motor_left, M_LEFT_PWM_FWD, M_LEFT_PWM_BWD);
+    
+    motor_right.motor = RIGHT;
+    init_motor(&motor_right, M_RIGHT_PWM_FWD, M_RIGHT_PWM_BWD);
 
-    pwm_set_wrap(pwm_left_slice, pwm_resolution);
-    pwm_set_wrap(pwm_right_slice, pwm_resolution);
+    pwm_set_wrap(motor_left.pwm_slice, pwm_res);
+    pwm_set_wrap(motor_right.pwm_slice, pwm_res);
 
-    return 1;
+    pwm_set_clkdiv(motor_left.pwm_slice, pwm_clkdiv);
+    pwm_set_clkdiv(motor_right.pwm_slice, pwm_clkdiv);
 }
 
 void drive_follow_arc(float speed, float radius)
 {
-    float omega = speed * radius; // Angular velocity
-    kin_output_t rpm_outputs = kin_calculate_rpm(speed, omega);
-    drive_set_motors_pwm_and_dir(FORWARD, rpm_outputs.left, rpm_outputs.right);
+    direction_t dir = (speed > 0 ? FORWARD : BACKWARD);
+    float speed_abs = (speed > 0 ? speed : speed * -1);
+
+    float omega = speed_abs * radius; // Angular velocity
+    kin_output_t rpm_outputs = kin_calculate_rpm(speed_abs, omega);
+    drive_set_motors_pwm_and_dir(dir, rpm_outputs.left, rpm_outputs.right);
 }
 
 float calculate_max_rpm(float motor_voltage, float motor_kv)
@@ -48,17 +47,29 @@ float calculate_max_rpm(float motor_voltage, float motor_kv)
     return motor_voltage * motor_kv;
 }
 
+void drive_stop_motor(motor_t motor)
+{
+    motor_pins_t motor_pins = (motor == LEFT ? motor_left : motor_right);
+    pwm_set_enabled(motor_pins.pwm_slice, false);
+}
+
+void init_motor(motor_pins_t* pins, uint gpio_fwd, uint gpio_bwd)
+{
+    pins->fwd_gpio = gpio_fwd;
+    pins->bwd_gpio = gpio_bwd;
+
+    pins->pwm_slice = pwm_gpio_to_slice_num(gpio_fwd);
+    pins->pwm_fwd_chan = pwm_gpio_to_channel(gpio_fwd);
+    pins->pwm_bwd_chan = pwm_gpio_to_channel(gpio_bwd);
+}
+
 void drive_set_motor_pwm_and_dir(motor_t motor, direction_t dir, float duty_cycle_fraction)
 {
-    uint pwm_slice = (motor == LEFT ? pwm_left_slice : pwm_right_slice);
-    uint gpio = (motor == LEFT ? M_LEFT_DIR : M_RIGHT_DIR);
-    uint pwm_chan = pwm_gpio_to_channel(motor == LEFT ? M_LEFT_PWM : M_RIGHT_PWM);
-
-    // TODO: Ensure the direction enum matches the hardware
-    gpio_put(gpio, (bool)dir);
-
-    pwm_set_chan_level(pwm_slice, pwm_chan, pwm_resolution * duty_cycle_fraction);
-    pwm_set_enabled(pwm_slice, true);
+    motor_pins_t motor_pins = (motor == LEFT ? motor_left : motor_right);
+    uint level = pwm_res * duty_cycle_fraction;
+    pwm_set_chan_level(motor_pins.pwm_slice, motor_pins.pwm_fwd_chan, level * (dir == FORWARD));
+    pwm_set_chan_level(motor_pins.pwm_slice, motor_pins.pwm_bwd_chan, level * (dir == BACKWARD));
+    pwm_set_enabled(motor_pins.pwm_slice, true);
 }
 
 void drive_set_motors_pwm_and_dir(direction_t dir, float fract_left, float fract_right)

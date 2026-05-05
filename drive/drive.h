@@ -1,15 +1,15 @@
 #ifndef DRIVE_H
     #define DRIVE_H
 
-#include <stdint.h>
+#include "pico/stdlib.h"
 
 // ===== CONSTANTS =====
 
-#define M_LEFT_PWM 10 // PWM5A
-#define M_LEFT_DIR 11
+#define M_LEFT_PWM_FWD 10 // PWM5A
+#define M_LEFT_PWM_BWD 11 // PWM5B
 
-#define M_RIGHT_PWM 12 // PWM6A
-#define M_RIGHT_DIR 13
+#define M_RIGHT_PWM_FWD 12 // PWM6A
+#define M_RIGHT_PWM_BWD 13 // PWM6B
 
 // TODO: These are placeholders
 #define WHEEL_DIAMETER 0.065f // 65mm
@@ -23,17 +23,47 @@ typedef enum {
 } motor_t;
 
 typedef enum {
-    FORWARD,
+    FORWARD ,
     BACKWARD
 } direction_t;
 
+// ===== STRUCTS =====
+
+typedef struct {
+    motor_t motor;
+    uint fwd_gpio;
+    uint bwd_gpio;
+    uint pwm_slice;
+    uint pwm_fwd_chan;
+    uint pwm_bwd_chan;
+} motor_pins_t;
+
 // ===== API =====
 
-int drive_init(float max_rpm, uint16_t pwm_resolution);
+/// @brief Initializes drive module
+/// @param max_rpm Max RPM of both motors. Calculate with `calculate_max_rpm`.
+/// @param pwm_resolution Maximum PWM count before wrapping. 1000-4000 range.
+/// @param pwm_clkdiv Clock divider for PWM, use to match frequency to ~20kHz.
+void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv);
+
+/// @brief Start differential drive to follow an arc
+/// @param speed Linear speed in m/s
+/// @param radius Radius of arc in m.
 void drive_follow_arc(float speed, float radius);
+
+/// @brief Calculates motor max RPM with V_MOT and KV.
+/// @return Max RPM
 float calculate_max_rpm(float motor_voltage, float motor_kv);
 
+void drive_stop_motor(motor_t motor);
+
 // ===== INTERNAL =====
+
+/// @brief Fills all fields in `pins` with the correct values. 
+/// @param pins Pointer to `motor_pins_t` struct.
+/// @param gpio_fwd Forward pin. Must be the same PWM slice as `gpio_bwd`.
+/// @param gpio_bwd Backward pin.
+void init_motor(motor_pins_t* pins, uint gpio_fwd, uint gpio_bwd);
 
 void drive_set_motor_pwm_and_dir(motor_t motor, direction_t dir, float duty_cycle_fraction);
 void drive_set_motors_pwm_and_dir(direction_t dir, float fract_left, float fract_right);
