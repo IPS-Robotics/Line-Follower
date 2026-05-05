@@ -37,11 +37,12 @@ void drive_set_motor_pwm_and_dir(motor_t motor, direction_t dir, float duty_cycl
 {
     uint pwm_slice = (motor == LEFT ? pwm_left_slice : pwm_right_slice);
     uint gpio = (motor == LEFT ? M_LEFT_DIR : M_RIGHT_DIR);
+    uint pwm_chan = pwm_gpio_to_channel(motor == LEFT ? M_LEFT_PWM : M_RIGHT_PWM);
 
     // TODO: Ensure the direction enum matches the hardware
     gpio_put(gpio, (bool)dir);
 
-    pwm_set_chan_level(pwm_slice, PWM_CHAN_A, pwm_resolution * duty_cycle_fraction);
+    pwm_set_chan_level(pwm_slice, pwm_chan, pwm_resolution * duty_cycle_fraction);
     pwm_set_enabled(pwm_slice, true);
 }
 

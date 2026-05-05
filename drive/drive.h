@@ -11,14 +11,19 @@
 #define M_RIGHT_PWM 12 // PWM6A
 #define M_RIGHT_DIR 13
 
+// TODO: These are placeholders
+#define MAX_RPM 100.0f
+#define WHEEL_DIAMETER 0.065f // 65mm
+#define WHEEL_DISTANCE 0.15f  // 150mm
+
 // ===== ENUMS =====
 
-typedef enum Motor {
+typedef enum {
     LEFT,
     RIGHT
 } motor_t;
 
-typedef enum Direction {
+typedef enum {
     FORWARD,
     BACKWARD
 } direction_t;
