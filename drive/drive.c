@@ -49,8 +49,9 @@ float calculate_max_rpm(float motor_voltage, float motor_kv)
 
 void drive_stop_motor(motor_t motor)
 {
-    motor_pins_t motor_pins = (motor == LEFT ? motor_left : motor_right);
-    pwm_set_enabled(motor_pins.pwm_slice, false);
+    motor_pins_t *motor_pins = (motor == LEFT ? &motor_left : &motor_right);
+    // Set both chnnels to zero. Do not disable the PWM slice as that would leave the pins HIGH.
+    pwm_set_both_levels(motor_pins->pwm_slice, 0, 0);
 }
 
 void init_motor(motor_pins_t* pins, uint gpio_fwd, uint gpio_bwd)
@@ -65,11 +66,12 @@ void init_motor(motor_pins_t* pins, uint gpio_fwd, uint gpio_bwd)
 
 void drive_set_motor_pwm_and_dir(motor_t motor, direction_t dir, float duty_cycle_fraction)
 {
-    motor_pins_t motor_pins = (motor == LEFT ? motor_left : motor_right);
+    motor_pins_t *motor_pins = (motor == LEFT ? &motor_left : &motor_right);
+    
     uint level = pwm_res * duty_cycle_fraction;
-    pwm_set_chan_level(motor_pins.pwm_slice, motor_pins.pwm_fwd_chan, level * (dir == FORWARD));
-    pwm_set_chan_level(motor_pins.pwm_slice, motor_pins.pwm_bwd_chan, level * (dir == BACKWARD));
-    pwm_set_enabled(motor_pins.pwm_slice, true);
+    pwm_set_chan_level(motor_pins->pwm_slice, motor_pins->pwm_fwd_chan, level * (dir == FORWARD));
+    pwm_set_chan_level(motor_pins->pwm_slice, motor_pins->pwm_bwd_chan, level * (dir == BACKWARD));
+    pwm_set_enabled(motor_pins->pwm_slice, true);
 }
 
 void drive_set_motors_pwm_and_dir(direction_t dir, float fract_left, float fract_right)
