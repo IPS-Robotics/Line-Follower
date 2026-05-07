@@ -1,4 +1,4 @@
-make_pio_header_pins(comms ${CMAKE_CURRENT_LIST_DIR}/Pwm.pio)
+pico_generate_pio_header(comms ${CMAKE_CURRENT_LIST_DIR}/Pwm.pio)
 
 # Define what files are part of this module
 add_library( comms
