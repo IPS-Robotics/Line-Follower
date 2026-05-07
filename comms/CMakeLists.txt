@@ -1,3 +1,5 @@
+make_pio_header_pins(comms ${CMAKE_CURRENT_LIST_DIR}/Pwm.pio)
+
 # Define what files are part of this module
 add_library( comms
     comms.c
@@ -7,6 +9,7 @@ add_library( comms
 # Define what dependencies this module has from the core SDK
 target_link_libraries(comms
     hardware_gpio
+    hardware_pio
     pico_stdlib
 )
 

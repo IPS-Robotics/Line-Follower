@@ -1,0 +1,50 @@
+.program pwm
+
+.wrap_target
+  mov x, !NULL             ; x = 0xffffffff
+
+loop_high:                 ; do {
+  jmp x-- cont_loop_high   ;   x--
+cont_loop_high:            ;
+  nop                      ;   nop to match number of cycles below
+  jmp pin loop_high        ; } while pin is high
+
+  in x, 16                 ; Copy 16 bits of counter into ISR
+
+loop_low:                  ; do {
+  jmp x-- cont_loop_low   ;   x--
+cont_loop_low:             ;
+  jmp pin exit_loop_low    ;   if pin is high: break
+  jmp loop_low             ; } while 1
+
+exit_loop_low:
+  in x, 16                 ; Copy 16 bits of counter into ISR
+.wrap
+
+% c-sdk {
+#include "hardware/gpio.h"
+#include "hardware/pio.h"
+
+static inline void pwm_program_init(
+  PIO pio, 
+  uint sm, 
+  uint offset, 
+  uint pin
+) {
+    // Set the pin direction to input at the PIO
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, false);
+    pio_gpio_init(pio, pin);
+    gpio_pull_up(pin);
+
+    // Map the pin as both input and jump pin.
+    pio_sm_config c = pwm_program_get_default_config(offset);
+    sm_config_set_in_pins(&c, pin);
+    sm_config_set_jmp_pin(&c, pin);
+    sm_config_set_in_shift(&c, false, true, 32);
+
+    // Load our configuration, and jump to the start of the program
+    pio_sm_init(pio, sm, offset, &c);
+    // Set the state machine running
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
