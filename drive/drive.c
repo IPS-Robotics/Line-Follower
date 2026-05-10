@@ -11,7 +11,7 @@ uint16_t pwm_res; // The max number the PWM counter will count to before resetti
 void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
 {
     pwm_res = pwm_resolution;
-    kin_init(max_rpm, WHEEL_DIAMETER, WHEEL_DISTANCE);
+    kin_init(max_rpm, WHEEL_DIAMETER, WHEEL_DISTANCE, 16, 80);
 
     // PWM pins
     gpio_set_function(M_LEFT_PWM_FWD, GPIO_FUNC_PWM);
@@ -32,13 +32,16 @@ void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
     pwm_set_clkdiv(motor_right.pwm_slice, pwm_clkdiv);
 }
 
-void drive_follow_arc(float speed, float radius)
+void drive_follow_arc(side_t direction, float speed, float radius)
 {
     direction_t dir = (speed > 0 ? FORWARD : BACKWARD);
     float speed_abs = (speed > 0 ? speed : speed * -1);
 
     float omega = speed_abs * radius; // Angular velocity
     kin_output_t rpm_outputs = kin_calculate_rpm(speed_abs, omega);
+    
+    // TODO: Implement logic for turning both left and right (perhaps pass direction as an argument to kin_calculate_rpm?)
+    // REMEMBER: Reversing also flips the direction
     drive_set_motors_pwm_and_dir(dir, rpm_outputs.left, rpm_outputs.right);
 }
 
@@ -47,7 +50,7 @@ float calculate_max_rpm(float motor_voltage, float motor_kv)
     return motor_voltage * motor_kv;
 }
 
-void drive_stop_motor(motor_t motor)
+void drive_stop_motor(side_t motor)
 {
     motor_pins_t motor_pins = (motor == LEFT ? motor_left : motor_right);
     pwm_set_enabled(motor_pins.pwm_slice, false);
@@ -63,7 +66,7 @@ void init_motor(motor_pins_t* pins, uint gpio_fwd, uint gpio_bwd)
     pins->pwm_bwd_chan = pwm_gpio_to_channel(gpio_bwd);
 }
 
-void drive_set_motor_pwm_and_dir(motor_t motor, direction_t dir, float duty_cycle_fraction)
+void drive_set_motor_pwm_and_dir(side_t motor, direction_t dir, float duty_cycle_fraction)
 {
     motor_pins_t motor_pins = (motor == LEFT ? motor_left : motor_right);
     uint level = pwm_res * duty_cycle_fraction;

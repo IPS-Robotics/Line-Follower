@@ -5,6 +5,11 @@
 
 #define PI 3.14159265358979323846f
 
+// ===== MACROS =====
+
+// Kinda a stupid piece of code, but hey, it works
+#define CLAMP(x, min, max) ((x > max ? max : x) < min ? min : (x > max ? max : x))
+
 // ===== STRUCTS =====
 
 typedef struct {
@@ -14,7 +19,7 @@ typedef struct {
 
 // ===== API =====
 
-void kin_init(float max_rpm, float wheel_diameter, float wheel_dist);
+void kin_init(float max_motor_rpm, float wheel_diameter, float wheel_dist, int motor_teeth, int output_teeth);
 kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel);
 
 #endif
