@@ -1,9 +1,9 @@
 #include "kinematics.h"
 
-float wheel_circumference;
-float wheel_distance;
-float max_rpm;
-float gear_ratio;
+static float wheel_circumference;
+static float wheel_distance;
+static float max_rpm;
+static float gear_ratio;
 
 void kin_init(float max_motor_rpm, float wheel_diameter, float wheel_dist, int motor_teeth, int output_teeth)
 {

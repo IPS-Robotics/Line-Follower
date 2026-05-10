@@ -4,9 +4,9 @@
 #include "hardware/pwm.h"
 #include "hardware/gpio.h"
 
-motor_pins_t motor_left;
-motor_pins_t motor_right;
-uint16_t pwm_res; // The max number the PWM counter will count to before resetting to zero.
+static motor_pins_t motor_left;
+static motor_pins_t motor_right;
+static uint16_t pwm_res; // The max number the PWM counter will count to before resetting to zero.
 
 void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
 {
