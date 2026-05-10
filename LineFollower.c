@@ -27,6 +27,7 @@ int main() {
     sleep_ms(3000);
     drive_stop_motor(LEFT);
     drive_stop_motor(RIGHT);
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1); // Turn on the WiFi LED to indicate we're done with the test
 
     // Loop
     while (1) {

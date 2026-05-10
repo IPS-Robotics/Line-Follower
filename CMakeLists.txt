@@ -44,13 +44,14 @@ pico_set_program_version(LineFollower "0.1")
 pico_enable_stdio_uart(LineFollower 1)
 pico_enable_stdio_usb(LineFollower 0)
 
-# Add the standard library to the build
+# Add libraries to the build
 target_link_libraries(LineFollower
         pico_stdlib
         pico_cyw43_arch_none     # we need Wifi to access the GPIO, but we don't need anything else
         hardware_gpio
         hardware_clocks
         hardware_pwm
+        hardware_i2c
 )
 
 # Add the standard include files to the build
@@ -58,15 +59,12 @@ target_include_directories(LineFollower PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
-# Add any user requested libraries
-target_link_libraries(LineFollower 
-        hardware_i2c
-        )
-
 # Add custom modules
 add_subdirectory(drive)
+add_subdirectory(line_follow)
+add_subdirectory(comms)
 
-target_link_libraries(LineFollower drive)
+target_link_libraries(LineFollower drive line_follow comms)
 
 pico_add_extra_outputs(LineFollower)
 

@@ -1,5 +1,4 @@
 #include "kinematics.h"
-#include <stdlib.h>
 
 float wheel_circumference;
 float wheel_distance;
