@@ -1,10 +1,10 @@
-pico_generate_pio_header(comms ${CMAKE_CURRENT_LIST_DIR}/pwm.pio)
-
 # Define what files are part of this module
 add_library( comms
     comms.c
     comms.h
 )
+
+pico_generate_pio_header(comms ${CMAKE_CURRENT_LIST_DIR}/pwm.pio)
 
 # Define what dependencies this module has from the core SDK
 target_link_libraries(comms
