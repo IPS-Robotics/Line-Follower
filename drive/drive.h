@@ -2,6 +2,7 @@
     #define DRIVE_H
 
 #include "pico/stdlib.h"
+#include "common.h"
 
 // ===== CONSTANTS =====
 
@@ -16,11 +17,6 @@
 #define WHEEL_DISTANCE 0.15f  // 150mm
 
 // ===== ENUMS =====
-
-typedef enum {
-    LEFT,
-    RIGHT
-} side_t;
 
 typedef enum {
     FORWARD,

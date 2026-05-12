@@ -9,7 +9,7 @@ static PIO pio;
 static uint offset;
 
 void comms_init() {
-    stdio_init_all()
+    stdio_init_all();
 
     pio = pio0;
     offset = pio_add_program(pio, &pwm_program);

@@ -1,6 +1,8 @@
 #ifndef KINEMATICS_H
     #define KINEMATICS_H
 
+#include "common.h"
+
 // ===== CONSTANTS =====
 
 #define PI 3.14159265358979323846f
@@ -20,6 +22,6 @@ typedef struct {
 // ===== API =====
 
 void kin_init(float max_motor_rpm, float wheel_diameter, float wheel_dist, int motor_teeth, int output_teeth);
-kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel);
+kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel, side_t side);
 
 #endif

@@ -38,7 +38,7 @@ void drive_follow_arc(side_t direction, float speed, float radius)
     float speed_abs = (speed > 0 ? speed : speed * -1);
 
     float omega = speed_abs * radius; // Angular velocity
-    kin_output_t rpm_outputs = kin_calculate_rpm(speed_abs, omega);
+    kin_output_t rpm_outputs = kin_calculate_rpm(speed_abs, omega, direction);
     
     // TODO: Implement logic for turning both left and right (perhaps pass direction as an argument to kin_calculate_rpm?)
     // REMEMBER: Reversing also flips the direction

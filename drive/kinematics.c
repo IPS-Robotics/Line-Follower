@@ -13,12 +13,22 @@ void kin_init(float max_motor_rpm, float wheel_diameter, float wheel_dist, int m
     gear_ratio = (float)output_teeth/(float)motor_teeth;
 }
 
-kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel)
+kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel, side_t side)
 {
     kin_output_t output = {0};
 
-    float v_left = linear_vel - (angular_vel * wheel_distance / 2.0f);
-    float v_right = linear_vel + (angular_vel * wheel_distance / 2.0f);
+    float v_left, v_right;
+
+    if (side == LEFT) {
+        v_left = linear_vel - (angular_vel * wheel_distance / 2.0f);
+        v_right = linear_vel + (angular_vel * wheel_distance / 2.0f);
+    } else if (side == RIGHT) {
+        v_left = linear_vel + (angular_vel * wheel_distance / 2.0f);
+        v_right = linear_vel - (angular_vel * wheel_distance / 2.0f);
+    } else {
+        // Invalid side, return 0 RPM
+        return output;
+    }
 
     float rpm_wheel_left = v_left / wheel_circumference * 60.0f;
     float rpm_wheel_right = v_right / wheel_circumference * 60.0f;
