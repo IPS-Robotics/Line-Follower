@@ -1,5 +1,5 @@
 #ifndef COMMS_H
-    #define COMMS_H
+#define COMMS_H
 
 // ===== CONSTANTS =====
 
@@ -11,5 +11,6 @@
 // ===== API =====
 
 void comms_init();
+void comms_read_CH();
 
 #endif
