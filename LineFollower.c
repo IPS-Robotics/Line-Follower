@@ -2,7 +2,6 @@
 #include "pico/cyw43_arch.h"
 #include "drive.h"
 #include "comms/comms.h"
-#include "pico/stdlib.h"
 #include "hardware/uart.h"
 
 #define MOTOR_KV (8000/7.2f) // RPM per Volt
@@ -24,6 +23,8 @@ int main() {
 
     // Loop
     while (1) {
+        printf("Waiting for signal debug \n");
+        sleep_ms(1000);
         comms_read_CH();
         printf("hello world \n");
         
