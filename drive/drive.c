@@ -32,6 +32,11 @@ void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
     pwm_set_clkdiv(motor_right.pwm_slice, pwm_clkdiv);
 }
 
+void apply_controls(float speed, float steering)
+{
+
+}
+
 void drive_follow_arc(side_t direction, float speed, float radius)
 {
     direction_t dir = (speed > 0 ? FORWARD : BACKWARD);
@@ -40,8 +45,6 @@ void drive_follow_arc(side_t direction, float speed, float radius)
     float omega = speed_abs * radius; // Angular velocity
     kin_output_t rpm_outputs = kin_calculate_rpm(speed_abs, omega, direction);
     
-    // TODO: Implement logic for turning both left and right (perhaps pass direction as an argument to kin_calculate_rpm?)
-    // REMEMBER: Reversing also flips the direction
     drive_set_motors_pwm_and_dir(dir, rpm_outputs.left, rpm_outputs.right);
 }
 

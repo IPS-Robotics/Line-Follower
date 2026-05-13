@@ -43,6 +43,11 @@ typedef struct {
 /// @param pwm_clkdiv Clock divider for PWM, use to match frequency to ~20kHz.
 void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv);
 
+/// @brief Applies speed and steering controls to the motors.
+/// @param speed Normalized speed value from the controller, where 1.0 is max forward speed, -1.0 is max reverse speed, and 0.0 is stop.
+/// @param steering Normalized steering value from the controller, where 1.0 is max right turn, -1.0 is max left turn, and 0.0 is straight.
+void apply_controls(float speed, float steering);
+
 /// @brief Start differential drive to follow an arc
 /// @param speed Linear speed in m/s
 /// @param radius Radius of arc in m.
