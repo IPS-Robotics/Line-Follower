@@ -1,6 +1,9 @@
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
 #include "drive.h"
+#include "comms/comms.h"
+#include "pico/stdlib.h"
+#include "hardware/uart.h"
 
 #define MOTOR_KV (8000/7.2f) // RPM per Volt
 #define MOTOR_VOLTAGE 7.0f   // Volts
@@ -8,6 +11,7 @@
 int main() {
     // Setup
     stdio_init_all();
+    comms_init();
     
     // We initialize the WiFi as some functions (and inbuilt LED for some reason) require the WiFi chip
     if (cyw43_arch_init()) {
@@ -20,5 +24,9 @@ int main() {
 
     // Loop
     while (1) {
+        comms_read_CH();
+        printf("hello world \n");
+        
+        sleep_ms(1000);
     }
 }

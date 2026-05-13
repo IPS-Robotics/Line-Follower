@@ -29,4 +29,6 @@ void comms_read_CH() {
     float CH2_value = read_pluse(1);
     float CH3_value = read_pluse(2);
     float CH4_value = read_pluse(3);
+
+    printf("CH3 PWM value %d", CH3_value);
 }
