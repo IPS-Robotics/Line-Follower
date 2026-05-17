@@ -1,7 +1,7 @@
 # Define what files are part of this module
 add_library( comms
-comms.c
-comms.h
+    comms.c
+    comms.h
 )
 
 pico_generate_pio_header(comms ${CMAKE_CURRENT_LIST_DIR}/pwm.pio)
@@ -14,4 +14,7 @@ target_link_libraries(comms
 )
 
 # Add this module to CMake
-target_include_directories(comms PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(comms PUBLIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/.." 
+)

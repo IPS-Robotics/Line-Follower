@@ -23,11 +23,7 @@ int main() {
 
     // Loop
     while (1) {
-        printf("Waiting for signal debug \n");
-        sleep_ms(1000);
-        comms_read_CH();
-        printf("hello world \n");
-        
+        comms_output state = comms_read_CH(); 
         sleep_ms(1000);
     }
 }

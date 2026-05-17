@@ -11,6 +11,16 @@
 // ===== API =====
 
 void comms_init();
-void comms_read_CH();
+
+// struct for defenitions 
+
+typedef struct {
+    float ch1_output;
+    float ch2_output;
+    int ch3_output;
+    int ch4_output;
+} comms_output_state;
+
+comms_output_state comms_read_CH();
 
 #endif

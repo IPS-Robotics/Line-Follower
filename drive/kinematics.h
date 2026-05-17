@@ -7,11 +7,6 @@
 
 #define PI 3.14159265358979323846f
 
-// ===== MACROS =====
-
-// Kinda a stupid piece of code, but hey, it works
-#define CLAMP(x, min, max) ((x > max ? max : x) < min ? min : (x > max ? max : x))
-
 // ===== STRUCTS =====
 
 typedef struct {
