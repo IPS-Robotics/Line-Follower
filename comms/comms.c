@@ -19,14 +19,16 @@ void comms_init()
     pwm_program_init(pio, 3, offset, RECIEVER_PIN_CH4);
 }
 
-// dont touch this or i will kill you
+
 static float read_pluse(uint sm) 
 {
     uint32_t raw = pio_sm_get_blocking(pio, sm);
-    uint16_t high_count = raw >> 16;
-    uint16_t high_ticks = 0xFFFF - high_count;
-    printf("Tick: %d \n", high_ticks);
-    return high_ticks * 0.024f;
+    //uint16_t high_count = raw >> 16;
+    uint16_t low_count = raw & 0xFFFF;
+    //uint16_t high_ticks = 0xFFFF - high_count;
+    uint16_t low_ticks = 0xFFFF - low_count;
+    printf("Low Tick: %d\n", low_ticks);
+    return low_ticks * 0.024f;
 }
 
 comms_output_state comms_read_CH() 
