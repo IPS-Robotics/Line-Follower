@@ -24,6 +24,6 @@ int main() {
     // Loop
     while (1) {
         comms_output_state state = comms_read_CH(); 
-        sleep_ms(1000);
+        sleep_ms(5);
     }
 }

@@ -1,24 +1,29 @@
 .program pwm
 
 .wrap_target
-  mov x, !NULL             ; x = 0xffffffff
+sync:
+    wait 0 pin 0          ; ensure low
+    wait 1 pin 0          ; rising edge
 
-loop_high:                 ; do {
-  jmp x-- cont_loop_high   ;   x--
-cont_loop_high:            ;
-  nop                      ;   nop to match number of cycles below
-  jmp pin loop_high        ; } while pin is high
+    ; measure high pulse
+    mov x, !null
+high_loop:
+    jmp x-- high_count
+high_count:
+    jmp pin high_loop
 
-  in x, 16                 ; Copy 16 bits of counter into ISR
+    in x, 16              ; high_ticks
 
-loop_low:                  ; do {
-  jmp x-- cont_loop_low   ;   x--
-cont_loop_low:             ;
-  jmp pin exit_loop_low    ;   if pin is high: break
-  jmp loop_low             ; } while 1
+    ; measure low remainder until next rise
+    mov x, !null
+period_loop:
+    jmp x-- period_count
+period_count:
+    jmp pin period_done
+    jmp period_loop
 
-exit_loop_low:
-  in x, 16                 ; Copy 16 bits of counter into ISR
+period_done:
+    in x, 16              ; low_ticks
 .wrap
 
 % c-sdk {
