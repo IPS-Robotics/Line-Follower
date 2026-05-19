@@ -8,6 +8,7 @@ add_library( line_follow
 target_link_libraries(line_follow
     hardware_gpio
     pico_stdlib
+    hardware_adc
 )
 
 # Add this module to CMake

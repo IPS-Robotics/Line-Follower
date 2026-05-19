@@ -1,7 +1,9 @@
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
 #include "drive.h"
-#include "comms/comms.h"
+#include "comms.h"
+#include "line_follow.h"
+
 #include "hardware/uart.h"
 
 #define MOTOR_KV (8000/7.2f) // RPM per Volt
@@ -21,9 +23,5 @@ int main() {
     // Initialize Drive Module (16-bit PWM)
     drive_init(calculate_max_rpm(MOTOR_VOLTAGE, MOTOR_KV), 2500, 2.5f);
 
-    // Loop
-    while (1) {
-        comms_output_state state = comms_read_CH(); 
-        sleep_ms(5);
-    }
+    lf_main();
 }

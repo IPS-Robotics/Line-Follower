@@ -8,4 +8,6 @@
 #define LEFT_SENSOR 27
 #define LEFT_SENSOR_CH 1
 
+void lf_main();
+
 #endif
