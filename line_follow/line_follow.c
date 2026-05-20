@@ -3,21 +3,34 @@
 #include "hardware/adc.h"
 #include "line_follow.h"
 
-static float convert_adc(uint reading)
+static float get_sensor_value(uint channel) //returns 0-1
 {
-    return reading * ADC_CONVERT_VAL;
+    adc_select_input(channel);
+    return ADC_CONVERT_VAL(adc_read());
 }
 
-void lf_main()
+sensor_dirs_t s_is_on_line()
+{
+    bool right = (get_sensor_value(RIGHT_SENSOR_CH) < BRIGHTNESS_THRESHOLD;)
+    bool middle = (get_sensor_value(MIDDLE_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
+    bool left = (get_sensor_value(LEFT_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
+    
+    return (sensor_dirs_t){
+        .right = right,
+        .middle = middle,
+        .left = left
+    };
+}
+
+void s_main()
 {
     adc_init();
     adc_gpio_init(RIGHT_SENSOR);
-    adc_select_input(RIGHT_SENSOR_CH);
-    uint adc_raw;
+    adc_gpio_init(LEFT_SENSOR)
 
-    while (true){
-        adc_raw = adc_read();
-        printf("%.2f\n", convert_adc(adc_raw));
+    while (true) {
+        printf("%.2f\n", get_sensor_value(RIGHT_SENSOR_CH));
         sleep_ms(10);
     }
 }
+
