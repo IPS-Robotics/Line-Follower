@@ -17,7 +17,9 @@ void lf_main()
 
     while (true){
         adc_raw = adc_read();
-        printf("%.2f\n", convert_adc(adc_raw));
+        // remove the comment later!!!!!
+
+        //printf("%.2f\n", convert_adc(adc_raw));
         sleep_ms(10);
     }
 }

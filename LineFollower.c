@@ -23,5 +23,12 @@ int main() {
     // Initialize Drive Module (16-bit PWM)
     drive_init(calculate_max_rpm(MOTOR_VOLTAGE, MOTOR_KV), 2500, 2.5f);
 
+    while (1)
+    {
+        comms_read_CH();
+        sleep_ms(100);
+    }
+    
+
     lf_main();
 }

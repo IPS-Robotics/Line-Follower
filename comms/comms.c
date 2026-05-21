@@ -20,50 +20,40 @@ void comms_init()
 }
 
 
-static float read_pluse(uint sm) 
+static float read_duty_cycle(uint state_machine)
 {
-    uint32_t sample = pio_sm_get_blocking(pio, sm);
+    uint32_t raw = pio_sm_get_blocking(pio, state_machine);
+    uint32_t high_count = raw >> 16;
+    uint32_t low_count  = raw & 0xFFFF;
 
-    uint16_t high_raw = sample >> 16;
-    uint16_t low_raw  = sample & 0xffff;
+    uint32_t high_ticks = 0xFFFF - high_count;
+    uint32_t low_ticks  = 0xFFFF - low_count;
 
-    uint32_t high_ticks = 0xffff - high_raw;
-    uint32_t low_ticks  = 0xffff - low_raw;
+    //printf("LOW: %u HIGH: %u \n", low_ticks, high_ticks);
 
-    uint64_t period_ticks = high_ticks + low_ticks;
+    uint32_t total_ticks = high_ticks + low_ticks;
 
-    float duty = (float)high_ticks / period_ticks;
-    printf("%f\n", duty);
-    return duty;
+    float total = (float)high_ticks / (float)total_ticks * 100.0f;
+
+    return total;
 }
 
 comms_output_state comms_read_CH() 
 {
-    float CH1_OUTPUT = read_pluse(0);
-    //float CH2_OUTPUT = read_pluse(1);
-    //float CH3_OUTPUT = read_pluse(2);
-    //float CH4_OUTPUT = read_pluse(3);
+    //int CH1_OUTPUT = read_duty_cycle(0);
+    int CH2_OUTPUT = read_duty_cycle(1);
+    int CH3_OUTPUT = read_duty_cycle(2) > 25.4f ? 1 : 0;
+    int CH4_OUTPUT = read_duty_cycle(3) > 25.4f ? 1 : 0;
 
     comms_output_state comms_state;
 
+    sleep_ms(100);
+
+
+    printf("Ch2 Output %d \n", CH2_OUTPUT);
     /*
-    comms_state.ch1_output = CLAMP((read_pluse(0) - 1500) / 500, -1.0f, 1.0f);
-    comms_state.ch2_output = CLAMP((read_pluse(1) - 1500) / 500, -1.0f, 1.0f);
-
-    comms_state.ch3_output = CLAMP((int)(read_pluse(2) / 1500), 0, 1);
-    comms_state.ch4_output = CLAMP((int)(read_pluse(3) / 1500), 0, 1);
-    printf("CH1 microseconds: %.1f \n", CH1_OUTPUT);
-    printf("CH2 microseconds: %.1f \n", CH2_OUTPUT);
-    printf("CH3 microseconds: %.1f \n", CH3_OUTPUT);
-    printf("CH4 microseconds: %.1f \n", CH4_OUTPUT);
-
-    printf("CH1 throttle value %.2f \n", comms_state.ch1_output);
-    printf("CH2 steering value %.2f \n", comms_state.ch2_output);
-    printf("CH3 microseconds: %.1f \n", CH3_OUTPUT);
-    printf("CH4 microseconds: %.1f \n", CH4_OUTPUT);
-    
-    printf("CH3 : %d \n", comms_state.ch3_output);
-    printf("CH4 : %d \n", comms_state.ch4_output);
+    printf("Ch3 Outout %d ", CH3_OUTPUT);
+    printf("CH4 Output %d \n", CH4_OUTPUT);
     */
 
     return comms_state;
