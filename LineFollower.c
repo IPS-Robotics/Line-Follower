@@ -23,8 +23,13 @@ int main() {
     // Initialize Drive Module (16-bit PWM)
     drive_init(calculate_max_rpm(MOTOR_VOLTAGE, MOTOR_KV), 2500, 2.5f);
 
+    // Variables
+
+    sensor_dirs_t current_direction;
+    sensor_dirs_t last valid_direction;
+
     while (true){
-        // Most basic robot control 
+        // Most basic robot control: turn 
         s_is_on_line()
     }
 }

@@ -26,7 +26,8 @@ void s_main()
 {
     adc_init();
     adc_gpio_init(RIGHT_SENSOR);
-    adc_gpio_init(LEFT_SENSOR)
+    adc_gpio_init(LEFT_SENSOR);
+    adc_gpio_init(MIDDLE_SENSOR);
 
     while (true) {
         printf("%.2f\n", get_sensor_value(RIGHT_SENSOR_CH));
