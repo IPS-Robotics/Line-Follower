@@ -61,10 +61,10 @@ target_include_directories(LineFollower PRIVATE
 
 # Add custom modules
 add_subdirectory(drive)
-add_subdirectory(line_follow)
+add_subdirectory(sensors)
 add_subdirectory(comms)
 
-target_link_libraries(LineFollower drive line_follow comms)
+target_link_libraries(LineFollower drive sensors comms)
 
 pico_add_extra_outputs(LineFollower)
 
