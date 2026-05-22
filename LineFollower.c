@@ -2,7 +2,7 @@
 #include "pico/cyw43_arch.h"
 #include "drive.h"
 #include "comms.h"
-#include "line_follow.h"
+#include "sensors.h"
 
 #include "hardware/uart.h"
 
@@ -23,13 +23,15 @@ int main() {
     // Initialize Drive Module (16-bit PWM)
     drive_init(calculate_max_rpm(MOTOR_VOLTAGE, MOTOR_KV), 2500, 2.5f);
 
-    // Variables
+    // Initialize Sensor Module
+    s_init();
 
+    // Variable
     sensor_dirs_t current_direction;
-    sensor_dirs_t last valid_direction;
+    sensor_dirs_t last_valid_direction;
 
     while (true){
         // Most basic robot control: turn 
-        s_is_on_line()
+        current_direction = s_is_on_line();
     }
 }

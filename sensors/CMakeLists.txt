@@ -12,4 +12,7 @@ target_link_libraries(sensors
 )
 
 # Add this module to CMake
-target_include_directories(sensors PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(sensors PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+)

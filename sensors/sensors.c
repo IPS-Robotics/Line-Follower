@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
-#include "line_follow.h"
+#include "sensors.h"
 
 static float get_sensor_value(uint channel) //returns 0-1
 {
@@ -11,7 +12,7 @@ static float get_sensor_value(uint channel) //returns 0-1
 
 sensor_dirs_t s_is_on_line()
 {
-    bool right = (get_sensor_value(RIGHT_SENSOR_CH) < BRIGHTNESS_THRESHOLD;)
+    bool right = (get_sensor_value(RIGHT_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
     bool middle = (get_sensor_value(MIDDLE_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
     bool left = (get_sensor_value(LEFT_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
     
@@ -22,16 +23,11 @@ sensor_dirs_t s_is_on_line()
     };
 }
 
-void s_main()
+void s_init()
 {
     adc_init();
-    adc_gpio_init(RIGHT_SENSOR);
-    adc_gpio_init(LEFT_SENSOR);
-    adc_gpio_init(MIDDLE_SENSOR);
-
-    while (true) {
-        printf("%.2f\n", get_sensor_value(RIGHT_SENSOR_CH));
-        sleep_ms(10);
-    }
+    adc_gpio_init(RIGHT_SENSOR_PIN);
+    adc_gpio_init(LEFT_SENSOR_PIN);
+    adc_gpio_init(MIDDLE_SENSOR_PIN);
 }
 
