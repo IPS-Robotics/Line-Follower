@@ -25,6 +25,6 @@
 // =--= FUNCTIONS =--=
 void s_init();
 
-sensor_dirs_t s_is_on_line();
+sensor_dirs_t s_read_sensor_values();
 
 #endif

@@ -10,7 +10,7 @@ static float get_sensor_value(uint channel) //returns 0-1
     return ADC_CONVERT_VAL(adc_read());
 }
 
-sensor_dirs_t s_is_on_line()
+sensor_dirs_t s_read_sensor_values()
 {
     bool right = (get_sensor_value(RIGHT_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
     bool middle = (get_sensor_value(MIDDLE_SENSOR_CH) < BRIGHTNESS_THRESHOLD);
@@ -21,6 +21,14 @@ sensor_dirs_t s_is_on_line()
         .middle = middle,
         .left = left
     };
+}
+
+float s_get_error()
+{
+    // TODO: Return error
+    // -1 - max left
+    // +1 - max right
+    return 0.0f;
 }
 
 void s_init()

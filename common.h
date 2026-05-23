@@ -11,12 +11,19 @@
 // Kinda a stupid piece of code, but hey, it works
 #define CLAMP(x, min, max) ((x > max ? max : x) < min ? min : (x > max ? max : x))
 
-// ===== STRUCTS =====
+// ===== ENUMS =====
 
 typedef enum {
     LEFT,
     RIGHT
 } side_t;
+
+typedef enum {
+    RC_MODE,
+    LF_MODE
+} control_mode_t;
+
+// ===== STRUCTS =====
 
 typedef struct {
     bool right;

@@ -16,13 +16,18 @@
 #define WHEEL_DIAMETER 0.065f // 65mm
 #define WHEEL_DISTANCE 0.15f  // 150mm
 
+// ===== LF TUNING =====
+
+#define LF_BASE_SPEED 0.4f
+#define K_P 0.6f // Proportional gain
+#define K_D 0.1f // Derivative gain
+
 // ===== ENUMS =====
 
 typedef enum {
     FORWARD,
     BACKWARD
 } direction_t;
-
 
 // ===== STRUCTS =====
 
@@ -46,17 +51,16 @@ void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv);
 /// @brief Applies speed and steering controls to the motors.
 /// @param speed Normalized speed value from the controller, where 1.0 is max forward speed, -1.0 is max reverse speed, and 0.0 is stop.
 /// @param steering Normalized steering value from the controller, where 1.0 is max right turn, -1.0 is max left turn, and 0.0 is straight.
-void apply_controls(float speed, float steering);
-
-/// @brief Start differential drive to follow an arc
-/// @param speed Linear speed in m/s
-/// @param radius Radius of arc in m.
-/// @param direction Whether to turn left or right
-void drive_follow_arc(side_t direction, float speed, float radius);
+void drive_apply_controls(float speed, float steering);
 
 /// @brief Calculates motor max RPM with V_MOT and KV.
 /// @return Max RPM
 float calculate_max_rpm(float motor_voltage, float motor_kv);
+
+/// @brief Uses PID control to set steering based on sensor error. Updates modle state.
+///        This depends on the `K_P` and `K_D` constants for tuning the PID control.
+/// @param error Error from -1 (max left) to 1 (max right)
+void drive_update_lf_state(float error);
 
 void drive_stop_motor(side_t motor);
 

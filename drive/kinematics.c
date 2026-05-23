@@ -1,4 +1,5 @@
 #include "kinematics.h"
+#include "math.h"
 
 static float wheel_circumference;
 static float wheel_distance;
@@ -7,7 +8,7 @@ static float gear_ratio;
 
 void kin_init(float max_motor_rpm, float wheel_diameter, float wheel_dist, int motor_teeth, int output_teeth)
 {
-    wheel_circumference = wheel_diameter * PI;
+    wheel_circumference = wheel_diameter * M_PI;
     wheel_distance = wheel_dist;
     max_motor_rpm = max_motor_rpm;
     gear_ratio = (float)output_teeth/(float)motor_teeth;
@@ -42,5 +43,3 @@ kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel, side_t side)
 
     return output;
 }
-
-
