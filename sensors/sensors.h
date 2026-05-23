@@ -26,5 +26,6 @@
 void s_init();
 
 sensor_dirs_t s_read_sensor_values();
+float s_get_error();
 
 #endif
