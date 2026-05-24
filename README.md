@@ -8,6 +8,12 @@ We do funny stuff.
 >
 > \- Janek
 
+> [!WARNING]
+> `Comms` is written by Daniil, please don't use it as an example.
+
+> [!CAUTION]
+> Don't ask about the oscilloscope.
+
 ## Hardware used
 
 This project is based on the Raspberry Pi Pico 2 W, and used the VSCode Pico extension for development.
@@ -15,6 +21,7 @@ This project is based on the Raspberry Pi Pico 2 W, and used the VSCode Pico ext
 The following hardware was used in the final robot:
 * `Absima SR4S` RC controller/reciever
 * `Cytron Maker Reflect` IR sensor (x3)
+* `Cytron MDD3A` 2 Channel ESC
 * 540, 55T brushed motor (x2)
 * 3S LiPO battery
 
