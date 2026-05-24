@@ -3,10 +3,13 @@
 #include "pico/stdlib.h"
 #include "hardware/pwm.h"
 #include "hardware/gpio.h"
+#include "math.h"
 
 static motor_pins_t motor_left;
 static motor_pins_t motor_right;
 static uint16_t pwm_res; // The max number the PWM counter will count to before resetting to zero.
+
+static float lf_last_error;
 
 void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
 {
@@ -32,25 +35,36 @@ void drive_init(float max_rpm, uint16_t pwm_resolution, uint16_t pwm_clkdiv)
     pwm_set_clkdiv(motor_right.pwm_slice, pwm_clkdiv);
 }
 
-void apply_controls(float speed, float steering)
+void drive_apply_controls(float speed, float steering)
 {
+    float left_vel, right_vel;
 
-}
+    if (steering >= 0.0f) {
+        left_vel = speed;
+        right_vel = speed * (1.0f - steering);
+    } else {
+        left_vel = speed * (1.0f + steering);
+        right_vel = speed;
+    }
 
-void drive_follow_arc(side_t direction, float speed, float radius)
-{
-    direction_t dir = (speed > 0 ? FORWARD : BACKWARD);
-    float speed_abs = (speed > 0 ? speed : speed * -1);
-
-    float omega = speed_abs * radius; // Angular velocity
-    kin_output_t rpm_outputs = kin_calculate_rpm(speed_abs, omega, direction);
-    
-    drive_set_motors_pwm_and_dir(dir, rpm_outputs.left, rpm_outputs.right);
+    direction_t dir = (speed >= 0.0f ? FORWARD : BACKWARD);
+    drive_set_motors_pwm_and_dir(dir, left_vel, right_vel);
 }
 
 float calculate_max_rpm(float motor_voltage, float motor_kv)
 {
     return motor_voltage * motor_kv;
+}
+
+void drive_update_lf_state(float error)
+{
+    float derivative = error - lf_last_error;
+    lf_last_error = error;
+
+    float steering = (K_P * error) + (K_D * derivative);
+    steering = CLAMP(steering, -1.0f, 1.0f);
+
+    drive_apply_controls(LF_BASE_SPEED, steering);
 }
 
 void drive_stop_motor(side_t motor)
