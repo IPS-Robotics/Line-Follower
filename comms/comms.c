@@ -2,69 +2,83 @@
 #include "../common.h"
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/pio.h"
-#include "pwm.pio.h"
+#include "hardware/gpio.h"
+#include "hardware/timer.h"
 
-static PIO pio;
-static uint offset;
+
+static volatile uint32_t rise_time;
+static volatile uint32_t pulse_width;
+
+void comms_callback(uint gpio, uint32_t events){
+
+    uint32_t now = time_us_32();
+
+    if (events & GPIO_IRQ_EDGE_RISE){
+        //gpio_acknowledge_irq(RECIEVER_PIN_CH1, GPIO_IRQ_EDGE_RISE);
+        rise_time = now;
+    } 
+    if (events & GPIO_IRQ_EDGE_FALL){
+        //gpio_acknowledge_irq(RECIEVER_PIN_CH1, GPIO_IRQ_EDGE_FALL);
+        pulse_width = time_us_32() - rise_time;
+    }
+
+}
 
 void comms_init() 
 {
     stdio_init_all();
-    pio = pio0;
-    offset = pio_add_program(pio, &pwm_program);
-    pwm_program_init(pio, 0, offset,  RECIEVER_PIN_CH1);
-    pwm_program_init(pio, 1, offset, RECIEVER_PIN_CH2);
-    pwm_program_init(pio, 2, offset, RECIEVER_PIN_CH3);
-    pwm_program_init(pio, 3, offset, RECIEVER_PIN_CH4);
-}
+    printf("USB Started\n");
+   
+    uint pin = RECIEVER_PIN_CH1;
+    gpio_init(pin);
+    gpio_set_dir(pin, GPIO_IN);
+    gpio_pull_down(pin);
 
+    printf("GPIO config done \n");
 
-static float read_pluse(uint sm) 
-{
-    uint32_t sample = pio_sm_get_blocking(pio, sm);
+    gpio_set_irq_callback(comms_callback);
+    irq_set_enabled(IO_IRQ_BANK0, true);
 
-    uint16_t high_raw = sample >> 16;
-    uint16_t low_raw  = sample & 0xffff;
+    gpio_set_irq_enabled(pin,
+        GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL,
+        true);
+   
+    printf("IRQ set up \n");
+    
 
-    uint32_t high_ticks = 0xffff - high_raw;
-    uint32_t low_ticks  = 0xffff - low_raw;
+/*
+    for (int i = 0; i < 4; i++)
+    {
+        uint pin = RECIEVER_PIN_CH1 + i;
+        gpio_init(pin);
+        gpio_set_dir(pin, GPIO_IN);
+        gpio_pull_down(pin);
 
-    uint64_t period_ticks = high_ticks + low_ticks;
+        if (i == 0)
+        {
+            gpio_set_irq_enabled_with_callback(pin, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &comms_callback);
+        } else{
 
-    float duty = (float)high_ticks / period_ticks;
-    printf("%f\n", duty);
-    return duty;
+        gpio_set_irq_enabled(
+            pin, 
+            GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, 
+            true);
+        }
+    }
+*/
+
 }
 
 comms_output_state comms_read_CH() 
 {
-    float CH1_OUTPUT = read_pluse(0);
-    //float CH2_OUTPUT = read_pluse(1);
-    //float CH3_OUTPUT = read_pluse(2);
-    //float CH4_OUTPUT = read_pluse(3);
 
     comms_output_state comms_state;
 
-    /*
-    comms_state.ch1_output = CLAMP((read_pluse(0) - 1500) / 500, -1.0f, 1.0f);
-    comms_state.ch2_output = CLAMP((read_pluse(1) - 1500) / 500, -1.0f, 1.0f);
+    comms_state.ch1_output = pulse_width;
 
-    comms_state.ch3_output = CLAMP((int)(read_pluse(2) / 1500), 0, 1);
-    comms_state.ch4_output = CLAMP((int)(read_pluse(3) / 1500), 0, 1);
-    printf("CH1 microseconds: %.1f \n", CH1_OUTPUT);
-    printf("CH2 microseconds: %.1f \n", CH2_OUTPUT);
-    printf("CH3 microseconds: %.1f \n", CH3_OUTPUT);
-    printf("CH4 microseconds: %.1f \n", CH4_OUTPUT);
+    printf("CH1 output: %d\n", comms_state.ch1_output);
 
-    printf("CH1 throttle value %.2f \n", comms_state.ch1_output);
-    printf("CH2 steering value %.2f \n", comms_state.ch2_output);
-    printf("CH3 microseconds: %.1f \n", CH3_OUTPUT);
-    printf("CH4 microseconds: %.1f \n", CH4_OUTPUT);
-    
-    printf("CH3 : %d \n", comms_state.ch3_output);
-    printf("CH4 : %d \n", comms_state.ch4_output);
-    */
+    sleep_ms(100);
 
     return comms_state;
 }

@@ -12,6 +12,12 @@ static control_mode_t mode;
 int main() {
     // Setup
     stdio_init_all();
+    printf("start");
+    while (!stdio_usb_connected())
+    {
+        sleep_ms(100);
+        printf("... \n");
+    }
     
     // We initialize the WiFi as some functions (and inbuilt LED for some reason) require the WiFi chip
     if (cyw43_arch_init()) {

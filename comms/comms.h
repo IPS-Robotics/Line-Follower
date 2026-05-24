@@ -11,6 +11,7 @@
 // ===== API =====
 
 void comms_init();
+void comms_callback();
 
 // struct for defenitions 
 
