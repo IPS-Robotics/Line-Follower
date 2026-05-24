@@ -18,15 +18,17 @@ int main() {
         sleep_ms(100);
         printf("... \n");
     }
-
-    comms_init();
-    printf("Comms_init called \n");
     
+    /*
     // We initialize the WiFi as some functions (and inbuilt LED for some reason) require the WiFi chip
     if (cyw43_arch_init()) {
         printf("Wi-Fi init failed");
         return -1;
     }
+    */
+
+    comms_init();
+    printf("Comms_init called \n");
 
     // Initialize Drive Module (16-bit PWM)
     drive_init(calculate_max_rpm(MOTOR_VOLTAGE, MOTOR_KV), 2500, 2.5f);
