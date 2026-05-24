@@ -8,6 +8,9 @@ We do funny stuff.
 >
 > \- Janek
 
+>[!NOTE]
+>We never procrastinate!
+
 > [!WARNING]
 > `Comms` is written by Daniil, please don't use it as an example.
 
