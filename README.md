@@ -8,6 +8,16 @@ We do funny stuff.
 >
 > \- Janek
 
+## Hardware used
+
+This project is based on the Raspberry Pi Pico 2 W, and used the VSCode Pico extension for development.
+
+The following hardware was used in the final robot:
+* `Absima SR4S` RC controller/reciever
+* `Cytron Maker Reflect` IR sensor (x3)
+* 540, 55T brushed motor (x2)
+* 3S LiPO battery
+
 ## Contributors
 
 ### Project Lead
@@ -35,5 +45,9 @@ Amount spent on reusable equipment during this project: `PLN 258.17`
 
 Sources of funding and parts:
 * IPS Administration
-* Student Council - `PLN 200.00`
+* Student Council (`PLN 200.00`)
 * Parts donated by club members
+
+## Lincense
+
+This project uses the MIT license for all files contained within this repository. The full license text can be found in `LICENSE`.
