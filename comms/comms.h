@@ -1,5 +1,5 @@
 #ifndef COMMS_H
-#define COMMS_H
+    #define COMMS_H
 
 // ===== CONSTANTS =====
 
@@ -8,20 +8,18 @@
 #define RECIEVER_PIN_CH3 8
 #define RECIEVER_PIN_CH4 9
 
-// ===== API =====
-
-void comms_init();
-void comms_callback();
-
-// struct for defenitions 
+// ===== STRUCTS =====
 
 typedef struct {
     float ch1_output;
     float ch2_output;
     int ch3_output;
     int ch4_output;
-} comms_output_state;
+} comms_output_state_t;
 
-comms_output_state comms_read_CH();
+// ===== API =====
+
+void comms_init();
+comms_output_state_t comms_read_CH();
 
 #endif

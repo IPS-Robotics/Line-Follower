@@ -9,20 +9,17 @@
 
 static control_mode_t mode;
 
-int main() {
+int main()
+{
     // Setup
     stdio_init_all();
-    printf("start");
-    while (!stdio_usb_connected())
-    {
+    printf("Program started");
+    
+    // Wait for USB to connect
+    // What exactly is this for?
+    while (!stdio_usb_connected()) {
         sleep_ms(100);
         printf("... \n");
-    }
-    
-    // We initialize the WiFi as some functions (and inbuilt LED for some reason) require the WiFi chip
-    if (cyw43_arch_init()) {
-        printf("Wi-Fi init failed");
-        return -1;
     }
     
     // Initialize Drive Module (16-bit PWM)
@@ -37,7 +34,7 @@ int main() {
     // Start in RC mode 
     mode = RC_MODE;
 
-    while (true){
+    while (true) {
         // Read controller input
 
         // Change control mode based on CH3

@@ -5,12 +5,11 @@
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
 
-
 static volatile uint32_t rise_time;
 static volatile uint32_t pulse_width;
 
-void comms_callback(uint gpio, uint32_t events){
-
+static void comms_callback(uint gpio, uint32_t events)
+{
     uint32_t now = time_us_32();
 
     if (events & GPIO_IRQ_EDGE_RISE){
@@ -21,14 +20,10 @@ void comms_callback(uint gpio, uint32_t events){
         //gpio_acknowledge_irq(RECIEVER_PIN_CH1, GPIO_IRQ_EDGE_FALL);
         pulse_width = time_us_32() - rise_time;
     }
-
 }
 
 void comms_init() 
 {
-    stdio_init_all();
-    printf("USB Started\n");
-   
     uint pin = RECIEVER_PIN_CH1;
     gpio_init(pin);
     gpio_set_dir(pin, GPIO_IN);
@@ -69,10 +64,9 @@ void comms_init()
 
 }
 
-comms_output_state comms_read_CH() 
+comms_output_state_t comms_read_CH() 
 {
-
-    comms_output_state comms_state;
+    comms_output_state_t comms_state;
 
     comms_state.ch1_output = pulse_width;
 
