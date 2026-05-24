@@ -2,59 +2,83 @@
 #include "../common.h"
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/pio.h"
-#include "pwm.pio.h"
+#include "hardware/gpio.h"
+#include "hardware/timer.h"
 
-static PIO pio;
-static uint offset;
+
+static volatile uint32_t rise_time;
+static volatile uint32_t pulse_width;
+
+void comms_callback(uint gpio, uint32_t events){
+
+    uint32_t event = gpio_get_irq_event_mask(RECIEVER_PIN_CH1);
+    uint32_t now = time_us_32();
+
+    if (event & GPIO_IRQ_EDGE_RISE){
+        //gpio_acknowledge_irq(RECIEVER_PIN_CH1, GPIO_IRQ_EDGE_RISE);
+        rise_time = now;
+    } else {
+        //gpio_acknowledge_irq(RECIEVER_PIN_CH1, GPIO_IRQ_EDGE_FALL);
+        pulse_width = time_us_32() - rise_time;
+    }
+
+}
 
 void comms_init() 
 {
     stdio_init_all();
-    pio = pio0;
-    offset = pio_add_program(pio, &pwm_program);
-    pwm_program_init(pio, 0, offset,  RECIEVER_PIN_CH1);
-    pwm_program_init(pio, 1, offset, RECIEVER_PIN_CH2);
-    pwm_program_init(pio, 2, offset, RECIEVER_PIN_CH3);
-    pwm_program_init(pio, 3, offset, RECIEVER_PIN_CH4);
-}
+    printf("USB Started\n");
+   
+    uint pin = RECIEVER_PIN_CH1;
+    gpio_init(pin);
+    gpio_set_dir(pin, GPIO_IN);
+    //gpio_pull_down(pin);
+
+    printf("GPIO config done \n");
 
 
-static float read_duty_cycle(uint state_machine)
-{
-    uint32_t raw = pio_sm_get_blocking(pio, state_machine);
-    uint32_t high_count = raw >> 16;
-    uint32_t low_count  = raw & 0xFFFF;
+    gpio_set_irq_enabled_with_callback(
+        pin, 
+        GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, 
+        true, &comms_callback);
 
-    uint32_t high_ticks = 0xFFFF - high_count;
-    uint32_t low_ticks  = 0xFFFF - low_count;
+    
 
-    //printf("LOW: %u HIGH: %u \n", low_ticks, high_ticks);
+/*
+    for (int i = 0; i < 4; i++)
+    {
+        uint pin = RECIEVER_PIN_CH1 + i;
+        gpio_init(pin);
+        gpio_set_dir(pin, GPIO_IN);
+        gpio_pull_down(pin);
 
-    uint32_t total_ticks = high_ticks + low_ticks;
+        if (i == 0)
+        {
+            gpio_set_irq_enabled_with_callback(pin, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &comms_callback);
+        } else{
 
-    float total = (float)high_ticks / (float)total_ticks * 100.0f;
+        gpio_set_irq_enabled(
+            pin, 
+            GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, 
+            true);
+        }
+    }
+*/
 
-    return total;
 }
 
 comms_output_state comms_read_CH() 
 {
-    //int CH1_OUTPUT = read_duty_cycle(0);
-    int CH2_OUTPUT = read_duty_cycle(1);
-    int CH3_OUTPUT = read_duty_cycle(2) > 25.4f ? 1 : 0;
-    int CH4_OUTPUT = read_duty_cycle(3) > 25.4f ? 1 : 0;
 
     comms_output_state comms_state;
 
+    comms_state.ch1_output = pulse_width;
+
+    printf("Ch1:%lu \n",
+       comms_state.ch1_output
+    );
+
     sleep_ms(100);
-
-
-    printf("Ch2 Output %d \n", CH2_OUTPUT);
-    /*
-    printf("Ch3 Outout %d ", CH3_OUTPUT);
-    printf("CH4 Output %d \n", CH4_OUTPUT);
-    */
 
     return comms_state;
 }
