@@ -17,6 +17,7 @@ int main()
     
     // Wait for USB to connect
     // What exactly is this for?
+    // testing when IRQ when it was broken, u can remove now
     while (!stdio_usb_connected()) {
         sleep_ms(100);
         printf("... \n");
@@ -36,6 +37,9 @@ int main()
 
     while (true) {
         // Read controller input
+        comms_read_CH();
+        sleep_ms(100);
+
 
         // Change control mode based on CH3
 
