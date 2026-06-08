@@ -12,8 +12,9 @@ static void comms_callback(uint gpio, uint32_t events)
 {
     uint32_t now = time_us_32();
 
+    int ch = gpio - 6;
+/*
     int ch = -1;
-
     if (gpio == RECIEVER_PIN_CH1){
         ch = 0;
     } else if (gpio == RECIEVER_PIN_CH2){
@@ -23,8 +24,8 @@ static void comms_callback(uint gpio, uint32_t events)
     } else if (gpio == RECIEVER_PIN_CH4){
         ch = 3;
     }
-
-    if (ch < 0){
+*/
+    if (ch < 0 && ch > 4){
         return;
     }
     
@@ -62,20 +63,26 @@ void comms_init()
     //printf("IRQ set up \n");
 }
 
+static float normalize(uint32_t pulse, float min_val, float max_val){
+    float x = (float)pulse;
+
+    return ((x - min_val) / (max_val - min_val)) * 2.0f - 1.0f;
+}
+
 comms_output_state_t comms_read_CH() 
 {
     comms_output_state_t comms_state;
 
-    comms_state.ch1_output = pulse_width[0];
-    comms_state.ch2_output = pulse_width[1];
-    comms_state.ch3_output = pulse_width[2];
-    comms_state.ch4_output = pulse_width[3];
+    comms_state.ch1_output = normalize(pulse_width[0], 1000, 2000);
+    comms_state.ch2_output = normalize(pulse_width[1], 1250, 1750);
+    comms_state.ch3_output = pulse_width[2] > 1500? 1 : 0;
+    comms_state.ch4_output = pulse_width[3] > 1500? 1 : 0;
 
-    printf("CH1 output: %lu CH2 output: %lu CH3 output: %lu CH4 output: %lu \n", 
-        pulse_width[0],
-        pulse_width[1], 
-        pulse_width[2], 
-        pulse_width[3]);
+    printf("CH1 output: %.2f CH2 output: %.2f CH3 output: %d CH4 output: %d \n", 
+        comms_state.ch1_output,
+        comms_state.ch2_output, 
+        comms_state.ch3_output, 
+        comms_state.ch4_output);
 
     sleep_ms(100);
 
