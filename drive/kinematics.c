@@ -38,8 +38,8 @@ kin_output_t kin_calculate_rpm(float linear_vel, float angular_vel, side_t side)
     float rpm_motor_right = rpm_wheel_right * gear_ratio;
 
     // Convert to duty cycle fraction (clamp to ensure we don't go over 1, which would be bad)
-    output.left = CLAMP(rpm_motor_left / max_rpm, 0, 1);
-    output.right = CLAMP(rpm_motor_right / max_rpm, 0, 1);
+    output.left = fminf(fmaxf(rpm_motor_left / max_rpm, 0), 1);
+    output.right = fminf(fmaxf(rpm_motor_right / max_rpm, 0), 1);
 
     return output;
 }

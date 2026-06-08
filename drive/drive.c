@@ -62,7 +62,7 @@ void drive_update_lf_state(float error)
     lf_last_error = error;
 
     float steering = (K_P * error) + (K_D * derivative);
-    steering = CLAMP(steering, -1.0f, 1.0f);
+    steering = fminf(fmaxf(steering, 1.0), 1.0f);
 
     drive_apply_controls(LF_BASE_SPEED, steering);
 }

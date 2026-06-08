@@ -37,9 +37,7 @@ int main()
 
     while (true) {
         // Read controller input
-        comms_read_CH();
-        sleep_ms(100);
-
+        comms_output_state_t controls = comms_read_CH();
 
         // Change control mode based on CH3
 
