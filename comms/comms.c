@@ -73,18 +73,19 @@ comms_output_state_t comms_read_CH()
 {
     comms_output_state_t comms_state;
 
-    comms_state.ch1_output = normalize(pulse_width[0], 1000, 2000);
-    comms_state.ch2_output = normalize(pulse_width[1], 1250, 1750);
+    comms_state.ch1_output = normalize(pulse_width[0], 900, 2100);
+    comms_state.ch2_output = normalize(pulse_width[1], 1000, 2000);
     comms_state.ch3_output = pulse_width[2] > 1500? 1 : 0;
     comms_state.ch4_output = pulse_width[3] > 1500? 1 : 0;
-
+/*
     printf("CH1 output: %.2f CH2 output: %.2f CH3 output: %d CH4 output: %d \n", 
         comms_state.ch1_output,
         comms_state.ch2_output, 
         comms_state.ch3_output, 
         comms_state.ch4_output);
 
-    sleep_ms(100);
+*/
+    //sleep_ms(100);
 
     return comms_state;
 }
